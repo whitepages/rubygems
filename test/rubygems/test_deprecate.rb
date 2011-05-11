@@ -170,19 +170,21 @@ class TestDeprecate < Gem::TestCase
   def test_report
     err = capturing :stderr do      
       thing = Thing.new
-      thing.foo
+      line = nil
+      thing.foo; line = __LINE__
       thing.foo
       thing.goo
       thing.foo
-      s = Deprecate.report
+      s = Gem::Deprecate.report
+      f = __FILE__
       assert_equal s, <<-REPORT
 Some of your installed gems called deprecated methods. See http://blog.zenspider.com/2011/05/rubygems-18-is-coming.html for background. Use 'gem pristine --all' to fix or 'rubygems update --system 1.7.2' to downgrade.
 TestDeprecate::Thing#foo is deprecated; use bar instead. It will be removed on or after 2099-03-01.
-  called from /Users/chaffee/dev/rubygems/test/rubygems/test_deprecate.rb:173
-  called from /Users/chaffee/dev/rubygems/test/rubygems/test_deprecate.rb:174
-  called from /Users/chaffee/dev/rubygems/test/rubygems/test_deprecate.rb:176
+  called from #{f}:#{line}
+  called from #{f}:#{line+1}
+  called from #{f}:#{line+3}
 TestDeprecate::Thing#goo is deprecated; use bar instead. It will be removed on or after 2099-04-01.
-  called from /Users/chaffee/dev/rubygems/test/rubygems/test_deprecate.rb:175
+  called from #{f}:#{line+2}
       REPORT
     end
   end

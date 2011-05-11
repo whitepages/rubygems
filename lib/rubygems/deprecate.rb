@@ -47,8 +47,8 @@ module Gem
 
     at_exit do
       # todo: extract and test
-      unless Deprecate.saved_warnings.size == 0
-        warn Deprecate.report
+      unless Gem::Deprecate.saved_warnings.size == 0
+        warn Gem::Deprecate.report
       end
     end
     
@@ -113,7 +113,7 @@ module Gem
               :year => year,
               :month => month
             })
-            Gem::Deprecate.add_warning warning
+            Deprecate.add_warning warning
           end
           send old, *args, &block
         end
