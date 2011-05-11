@@ -26,9 +26,9 @@ module Gem
     SKIP_DEFAULT = false
     @skip = nil
 
-  def self.skip # :nodoc:
-    @skip.nil? ? SKIP_DEFAULT : @skip
-  end
+    def self.skip # :nodoc:
+      @skip.nil? ? SKIP_DEFAULT : @skip
+    end
 
     def self.skip= v # :nodoc:
       @skip = v
@@ -74,11 +74,23 @@ module Gem
       Gem::Deprecate.skip = original
     end
 
-    require 'ostruct'
-    class Warning < OpenStruct
+    class Warning
+      attr_accessor :target, :method_name, :replacement, :year, :month, :location
+
+      def initialize options
+        @target, @method_name, @replacement, @year, @month, @location =
+        options[:target], options[:method_name], options[:replacement], options[:year], options[:month], options[:location]
+      end
+      
+      def ==(other)
+        target == other.target and
+        method_name == other.method_name and
+        location == other.location
+      end
+      
       def message
         [ "#{target}#{method_name} is deprecated",
-                repl == :none ? " with no replacement" : "; use #{replacement} instead.",
+                replacement == :none ? " with no replacement" : "; use #{replacement} instead.",
                 " It will be removed on or after %4d-%02d-01." % [year, month]
         ].join
       end
