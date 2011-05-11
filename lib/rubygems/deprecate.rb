@@ -23,9 +23,9 @@
 module Gem
   module Deprecate
 
-    def self.skip # :nodoc:
-      @skip ||= false
-    end
+  def self.skip # :nodoc:
+    @skip.nil? ? (@skip = true) : @skip
+  end
 
     def self.skip= v # :nodoc:
       @skip = v
@@ -34,8 +34,8 @@ module Gem
     ##
     # Temporarily turn off warnings. Intended for tests only.
 
-    def skip_during
-      Gem::Deprecate.skip, original = true, Gem::Deprecate.skip
+    def skip_during(will_skip = true)
+      Gem::Deprecate.skip, original = will_skip, Gem::Deprecate.skip
       yield
     ensure
       Gem::Deprecate.skip = original
