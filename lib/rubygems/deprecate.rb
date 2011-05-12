@@ -55,12 +55,20 @@ module Gem
     def self.report
       out = ""
       out << "Some of your installed gems called deprecated methods. See http://blog.zenspider.com/2011/05/rubygems-18-is-coming.html for background. Use 'gem pristine --all' to fix or 'rubygems update --system 1.7.2' to downgrade.\n"
-      last_message = nil
-      warnings = @saved_warnings.sort_by{|w| w.full_name}.each do |w|
-        out << (last_message = w.message) + "\n" unless last_message == w.message
-        out << w.loc
-        out << "\n"
+      last_warning = nil
+      warnings = @saved_warnings.sort.each do |w|
+        if last_warning and last_warning.target == w.target and last_warning.method_name == w.method_name
+          if last_warning.file == w.file
+            out << ",#{w.line}"
+          else
+            out << "\n#{w.loc}"
+          end
+        else
+          out << "\n#{w.message}\n#{w.loc}"
+        end
+        last_warning = w
       end
+      out << "\n"
       out
     end
 
@@ -88,6 +96,18 @@ module Gem
         location == other.location
       end
       
+      def <=>(other)
+        self.compare_string <=> other.compare_string
+      end
+      
+      def compare_string
+        [target, method_name, file, line].join('|')
+      end
+      
+      def to_s
+        [target, method_name, replacement, year, month, location].map(&:inspect).join('|')
+      end
+    
       def message
         [ "#{target}#{method_name} is deprecated",
                 replacement == :none ? " with no replacement" : "; use #{replacement} instead.",
@@ -101,6 +121,14 @@ module Gem
       
       def full_name
         "#{target}#{method_name}"
+      end
+
+      def line
+        location.last
+      end
+
+      def file
+        location.first
       end
     end
 
@@ -124,7 +152,7 @@ module Gem
               :year => year,
               :month => month
             })
-            Deprecate.add_warning warning
+            Gem::Deprecate.add_warning warning
           end
           send old, *args, &block
         end
