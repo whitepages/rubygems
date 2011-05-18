@@ -23,11 +23,10 @@
 module Gem
   module Deprecate
     
-    SKIP_DEFAULT = false
     @skip = nil
 
     def self.skip # :nodoc:
-      @skip.nil? ? SKIP_DEFAULT : @skip
+      @skip.nil? ? false : @skip
     end
 
     def self.skip= v # :nodoc:
@@ -46,23 +45,19 @@ module Gem
     end
 
     at_exit do
-      # todo: extract and test
       unless Gem::Deprecate.saved_warnings.size == 0
         warn Gem::Deprecate.report
       end
     end
     
     def self.report
-      out = ""
+      out = "\n"
       out << "Some of your installed gems called deprecated methods. See http://blog.zenspider.com/2011/05/rubygems-18-is-coming.html for background. Use 'gem pristine --all' to fix or 'rubygems update --system 1.7.2' to downgrade.\n"
       last_warning = nil
       warnings = @saved_warnings.sort.each do |w|
         if last_warning and last_warning.target == w.target and last_warning.method_name == w.method_name
           if last_warning.file == w.file
             out << ",#{w.line}"
-          else
-            out << "\n#{w.loc}"
-          end
         else
           out << "\n#{w.message}\n#{w.loc}"
         end
