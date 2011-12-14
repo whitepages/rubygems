@@ -58,6 +58,9 @@ module Gem
         if last_warning and last_warning.target == w.target and last_warning.method_name == w.method_name
           if last_warning.file == w.file
             out << ",#{w.line}"
+          else
+            out << "\n#{w.loc}"
+          end
         else
           out << "\n#{w.message}\n#{w.loc}"
         end
