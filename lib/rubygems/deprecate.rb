@@ -22,7 +22,7 @@
 
 module Gem
   module Deprecate
-    
+
     @skip = nil
 
     def self.skip # :nodoc:
@@ -36,7 +36,7 @@ module Gem
     def self.saved_warnings # :nodoc:
       @saved_warnings ||= []
     end
-    
+
     def self.add_warning w  # :nodoc:
       warn "Warning: #{w.message} (Further warnings suppressed until exit.)\n#{w.loc}" if saved_warnings.empty?
       unless saved_warnings.include? w
@@ -49,7 +49,7 @@ module Gem
         warn Gem::Deprecate.report
       end
     end
-    
+
     def self.report
       out = "\n"
       out << "Some of your installed gems called deprecated methods. See http://blog.zenspider.com/2011/05/rubygems-18-is-coming.html for background. Use 'gem pristine --all' to fix or 'rubygems update --system 1.7.2' to downgrade.\n"
@@ -87,36 +87,36 @@ module Gem
         @target, @method_name, @replacement, @year, @month, @location =
         options[:target], options[:method_name], options[:replacement], options[:year], options[:month], options[:location]
       end
-      
+
       def ==(other)
         target == other.target and
         method_name == other.method_name and
         location == other.location
       end
-      
+
       def <=>(other)
         self.compare_string <=> other.compare_string
       end
-      
+
       def compare_string
         [target, method_name, file, line].join('|')
       end
-      
+
       def to_s
         [target, method_name, replacement, year, month, location].map(&:inspect).join('|')
       end
-      
+
       def message
         [ "#{target}#{method_name} is deprecated",
                 replacement == :none ? " with no replacement" : "; use #{replacement} instead",
                 ". It will be removed on or after %4d-%02d-01." % [year, month]
         ].join
       end
-      
+
       def loc
         "  called from #{location.join(":")}"
       end
-      
+
       def full_name
         "#{target}#{method_name}"
       end

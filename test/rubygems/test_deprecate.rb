@@ -11,7 +11,7 @@ class TestDeprecate < Gem::TestCase
     @original_skip = Deprecate.skip
     Deprecate.skip = false
   end
-  
+
   def teardown
     Deprecate.saved_warnings.clear
     Deprecate.skip = @original_skip
@@ -103,7 +103,7 @@ class TestDeprecate < Gem::TestCase
 
   public
   def test_has_a_place_to_save_warnings
-    assert_empty Deprecate.saved_warnings    
+    assert_empty Deprecate.saved_warnings
   end
 
   class Thing
@@ -168,7 +168,7 @@ class TestDeprecate < Gem::TestCase
   end
 
   def test_report
-    err = capturing :stderr do      
+    err = capturing :stderr do
       thing = Thing.new
       line = nil
       thing.foo; line = __LINE__
@@ -196,7 +196,7 @@ TestDeprecate::Thing#foo is deprecated; use bar instead. It will be removed on o
 TestDeprecate::Thing#goo is deprecated; use bar instead. It will be removed on or after 2099-04-01.
   called from #{f}:#{line+2}
       REPORT
-      
+
     end
   end
 end
