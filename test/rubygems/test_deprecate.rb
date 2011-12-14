@@ -7,14 +7,14 @@ require 'rubygems/deprecate'
 class TestDeprecate < Gem::TestCase
 
   def setup
-    Deprecate.saved_warnings.clear
-    @original_skip = Deprecate.skip
-    Deprecate.skip = false
+    Gem::Deprecate.saved_warnings.clear
+    @original_skip = Gem::Deprecate.skip
+    Gem::Deprecate.skip = false
   end
 
   def teardown
-    Deprecate.saved_warnings.clear
-    Deprecate.skip = @original_skip
+    Gem::Deprecate.saved_warnings.clear
+    Gem::Deprecate.skip = @original_skip
   end
 
   def test_defaults
@@ -22,30 +22,30 @@ class TestDeprecate < Gem::TestCase
   end
 
   def test_assignment
-    Deprecate.skip = false
-    assert_equal false, Deprecate.skip
+    Gem::Deprecate.skip = false
+    assert_equal false, Gem::Deprecate.skip
 
-    Deprecate.skip = true
-    assert_equal true, Deprecate.skip
+    Gem::Deprecate.skip = true
+    assert_equal true, Gem::Deprecate.skip
 
-    Deprecate.skip = nil
-    assert([true,false].include? Deprecate.skip)
+    Gem::Deprecate.skip = nil
+    assert([true,false].include? Gem::Deprecate.skip)
   end
 
   def test_skip
-    Deprecate.skip_during do
-      assert_equal true, Deprecate.skip
+    Gem::Deprecate.skip_during do
+      assert_equal true, Gem::Deprecate.skip
     end
 
-    Deprecate.skip_during(false) do
-      assert_equal false, Deprecate.skip
+    Gem::Deprecate.skip_during(false) do
+      assert_equal false, Gem::Deprecate.skip
     end
 
-    Deprecate.skip_during(nil) do
-      assert_equal false, Deprecate.skip
+    Gem::Deprecate.skip_during(nil) do
+      assert_equal false, Gem::Deprecate.skip
     end
 
-    Deprecate.skip = nil
+    Gem::Deprecate.skip = nil
   end
 
   ### stolen from Wrong::Helpers
@@ -103,11 +103,11 @@ class TestDeprecate < Gem::TestCase
 
   public
   def test_has_a_place_to_save_warnings
-    assert_empty Deprecate.saved_warnings
+    assert_empty Gem::Deprecate.saved_warnings
   end
 
   class Thing
-    extend Deprecate
+    extend Gem::Deprecate
     attr_accessor :message
     def foo
       @message = "foo"
@@ -145,7 +145,7 @@ class TestDeprecate < Gem::TestCase
       thing = Thing.new
       thing.foo
       thing.goo
-      assert_equal 2, Deprecate.saved_warnings.size
+      assert_equal 2, Gem::Deprecate.saved_warnings.size
     end
   end
 
@@ -157,14 +157,14 @@ class TestDeprecate < Gem::TestCase
         thing.foo; line1 = __LINE__
       end
       thing.foo; line2 = __LINE__
-      assert_equal 2, Deprecate.saved_warnings.size
-      assert_equal line1, Deprecate.saved_warnings[0].location.last
-      assert_equal line2, Deprecate.saved_warnings[1].location.last
+      assert_equal 2, Gem::Deprecate.saved_warnings.size
+      assert_equal line1, Gem::Deprecate.saved_warnings[0].location.last
+      assert_equal line2, Gem::Deprecate.saved_warnings[1].location.last
     end
   end
 
   def test_suppresses_further_warnings_until_exit
-    Deprecate.saved_warnings.clear
+    Gem::Deprecate.saved_warnings.clear
   end
 
   def test_report
